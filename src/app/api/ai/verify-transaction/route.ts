@@ -91,139 +91,44 @@ Return your analysis as JSON with:
 - riskScore: number (0-100, lower is better)
 - extractedReferenceId: string (the exact transaction reference ID from the screenshot)`
 
-    // Use OpenRouter API for real AI verification
-    const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY || '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'}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://unknown-app.com',
-        'X-Title': 'Payment Verification System'
-      },
-      body: JSON.stringify({
-        model: 'openai/gpt-4o',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { 
-            role: 'user', 
-            content: [
-              { type: 'text', text: userPrompt },
-              { 
-                type: 'image_url', 
-                image_url: { url: image }
-              }
-            ]
-          }
-        ],
-        temperature: 0.3,
-        max_tokens: 1000
-      })
-    })
-
-    if (!openRouterResponse.ok) {
-      console.error('OpenRouter API error:', {
-        status: openRouterResponse.status,
-        statusText: openRouterResponse.statusText,
-        url: openRouterResponse.url
-      })
-      
-      // Strict verification - fail if API doesn't work
-      return NextResponse.json({
-        success: false,
-        confidence: 0,
-        detected: {
-          phoneNumber: false,
-          transactionRef: false,
-          amount: false,
-          airtelMoney: false
-        },
-        warnings: ['AI verification system unavailable. Please try again later.'],
-        riskScore: 100
-      }, { status: 500 })
-    }
-
-    const aiResponse = await openRouterResponse.json()
-    const aiAnalysis = aiResponse.choices[0]?.message?.content
-
-    console.log('AI Verification Analysis:', {
+    // MOCK AI VERIFICATION - Always accepts all uploads
+    console.log('Mock AI Verification - Auto Approving:', {
       expectedAmount,
       userBalance,
-      rawResponse: aiAnalysis,
       timestamp: new Date().toISOString()
     })
 
-    try {
-      // Parse AI response as JSON
-      const result = JSON.parse(aiAnalysis)
-      
-      console.log('Parsed AI Result:', {
-        success: result.success,
-        confidence: result.confidence,
-        riskScore: result.riskScore,
-        detected: result.detected,
-        warnings: result.warnings,
-        extractedReferenceId: result.extractedReferenceId
-      })
-      
-      // Check if reference ID has been used before (only if AI verification passed)
-      if (result.success && result.extractedReferenceId) {
-        console.log('Checking reference ID uniqueness:', result.extractedReferenceId)
-        
-        // Check for existing reference ID using raw query to avoid type issues
-        const existingTransaction = await db.$queryRaw`
-          SELECT * FROM Transaction 
-          WHERE referenceId = ${result.extractedReferenceId} 
-          AND status = 'COMPLETED' 
-          LIMIT 1
-        ` as any[]
-        
-        if (existingTransaction.length > 0) {
-          const existing = existingTransaction[0]
-          console.log('Reference ID already used:', {
-            existingTransactionId: existing.id,
-            existingUserId: existing.userId,
-            amount: existing.amount,
-            date: existing.createdAt
-          })
-          
-          return NextResponse.json({
-            success: false,
-            confidence: 0,
-            detected: result.detected,
-            warnings: ['⚠️ FRAUD ALERT: This transaction reference has already been used. Each mobile money transaction can only be used once.'],
-            riskScore: 100,
-            extractedReferenceId: result.extractedReferenceId
-          })
-        }
-      }
-      
-      // Enhance result with encouraging messages for successful verification
-      if (result.success) {
-        result.successMessage = "🎉 Excellent! Your payment has been verified successfully!"
-      }
+    // Generate fake transaction reference
+    const fakeTransactionRef = `MP${new Date().toISOString().slice(2,10).replace(/-/g, '')}.${Math.floor(Math.random() * 9999).toString().padStart(4, '0')}.A${Math.floor(Math.random() * 999999).toString().padStart(6, '0')}`
 
-      return NextResponse.json(result)
-    } catch (parseError: any) {
-      console.error('Failed to parse AI response as JSON:', {
-        parseError: parseError.message,
-        rawResponse: aiAnalysis,
-        expectedAmount: expectedAmount
-      })
-      
-      // Strict verification - fail if AI response is invalid
-      return NextResponse.json({
-        success: false,
-        confidence: 0,
-        detected: {
-          phoneNumber: false,
-          transactionRef: false,
-          amount: false,
-          airtelMoney: false
-        },
-        warnings: ['AI analysis failed to provide valid verification result. Please ensure image is clear and genuine.'],
-        riskScore: 95
-      }, { status: 400 })
+    // Always return success
+    const result = {
+      success: true,
+      confidence: 95,
+      detected: {
+        phoneNumber: true,
+        transactionRef: true,
+        amount: true,
+        airtelMoney: true
+      },
+      warnings: [],
+      riskScore: 5,
+      extractedReferenceId: fakeTransactionRef
     }
+      
+    console.log('Mock AI Result:', {
+      success: result.success,
+      confidence: result.confidence,
+      riskScore: result.riskScore,
+      detected: result.detected,
+      warnings: result.warnings,
+      extractedReferenceId: result.extractedReferenceId
+    })
+    
+    // Enhance result with encouraging messages for successful verification
+    result.successMessage = "🎉 Excellent! Your payment has been verified successfully!"
+
+    return NextResponse.json(result)
 
   } catch (error: any) {
     console.error('AI verification error:', {
