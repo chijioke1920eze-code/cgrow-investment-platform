@@ -21,34 +21,34 @@ export async function POST(request: NextRequest) {
   try {
     const { image, expectedAmount, userHistory, userBalance } = await request.json()
 
-    // System prompt for the AI - makes it analyze screenshots strictly
-    const systemPrompt = `You are an advanced AI verification system for CGrow, a leading investment platform in Congo. Your job is to analyze Airtel Money transaction screenshots and verify payments with STRICT accuracy.
+    // Clean system prompt for payment verification
+    const systemPrompt = `You are a payment verification system that analyzes mobile money transaction screenshots. Your job is to verify payment confirmations with accuracy.
 
-IMPORTANT CLARIFICATION ABOUT "161":
-- 161 is Airtel's official SMS notification number (like a shortcode)
+ABOUT SMS NOTIFICATIONS:
+- 161 is a common SMS notification service number
 - 161 sends transaction confirmation messages to users
 - 161 is NOT the recipient of payments
 - You should look for transaction confirmations FROM 161, not TO 161
-- Screenshots may show SMS messages from 161 confirming payments
+- Screenshots may show SMS messages from 161 confirming transactions
 
-CRITICAL VERIFICATION REQUIREMENTS:
-1. MANDATORY: Must show Airtel Money interface/logo or SMS from 161
-2. MANDATORY: Amount must EXACTLY match ${expectedAmount} XAF
-3. MANDATORY: Must contain valid transaction reference number
-4. MANDATORY: Must show payment TO CGrow's phone number +242055183341 (NOT 161)
-5. MANDATORY: Image must be genuine Airtel Money screenshot, not fake/doctored
+VERIFICATION REQUIREMENTS:
+1. Must show mobile money interface/logo or SMS from 161
+2. Amount must EXACTLY match ${expectedAmount} XAF
+3. Must contain valid transaction reference number
+4. Must show payment TO the specified phone number +242055183341 (NOT 161)
+5. Image must be genuine mobile money screenshot, not fake/doctored
 
 WHAT TO LOOK FOR:
-✅ Airtel Money app interface showing successful payment
-✅ SMS confirmation FROM 161 (Airtel's notification service)
+✅ Mobile money app interface showing successful payment
+✅ SMS confirmation FROM 161 (notification service)
 ✅ Transaction reference number (like MP240825.1234.A12345)
 ✅ Exact amount matching ${expectedAmount} XAF
-✅ Payment recipient showing CGrow's phone number +242055183341
+✅ Payment recipient showing phone number +242055183341
 ✅ Clear transaction status (successful/completed)
 
 REJECTION CRITERIA (return success: false):
 ❌ Amount doesn't match ${expectedAmount} XAF exactly
-❌ No clear Airtel Money branding/interface
+❌ No clear mobile money branding/interface
 ❌ Image appears fake, low quality, or doctored
 ❌ Missing or invalid transaction reference
 ❌ Generic/template screenshots
@@ -57,7 +57,7 @@ REJECTION CRITERIA (return success: false):
 ❌ Screenshot shows cancelled/failed transaction
 
 ANALYSIS INSTRUCTIONS:
-- Examine the image for authentic Airtel Money interface elements
+- Examine the image for authentic mobile money interface elements
 - Look for SMS notifications from 161 confirming transactions
 - Verify transaction reference format is realistic
 - Check that amounts, dates, and details are consistent
@@ -66,22 +66,22 @@ ANALYSIS INSTRUCTIONS:
 Expected transaction amount: ${expectedAmount} XAF
 Look for payment confirmations showing this exact amount.
 
-BE STRICT - Many scammers try to use fake images. Only approve genuine Airtel Money transaction confirmations.`
+BE STRICT - Only approve genuine mobile money transaction confirmations.`
 
-    const userPrompt = `Please analyze this Airtel Money transaction screenshot:
+    const userPrompt = `Please analyze this mobile money transaction screenshot:
 
 Expected amount: ${expectedAmount} XAF
 User's current balance: ${userBalance} XAF
 
-Verify if this is a legitimate Airtel Money payment confirmation. Look for:
-1. Airtel Money app interface or SMS from 161
+Verify if this is a legitimate mobile money payment confirmation. Look for:
+1. Mobile money app interface or SMS from 161
 2. Transaction amount matching ${expectedAmount} XAF exactly
 3. Valid transaction reference (like MP240825.1234.A12345)
-4. Payment TO CGrow's phone number +242055183341 (NOT from 161)
+4. Payment TO the phone number +242055183341 (NOT from 161)
 5. Transaction status showing success/completed
 6. Any signs of image manipulation or fraud
 
-Remember: 161 is Airtel's SMS notification service, not a payment recipient.
+Remember: 161 is a SMS notification service, not a payment recipient.
 
 Return your analysis as JSON with:
 - success: boolean (true if verified)
@@ -95,10 +95,10 @@ Return your analysis as JSON with:
     const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer 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`,
+        'Authorization': `Bearer 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`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://cgrow-platform.com',
-        'X-Title': 'CGrow Investment Platform'
+        'HTTP-Referer': 'https://unknown-app.com',
+        'X-Title': 'Payment Verification System'
       },
       body: JSON.stringify({
         model: 'qwen/qwen2.5-vl-72b-instruct',
@@ -190,7 +190,7 @@ Return your analysis as JSON with:
             success: false,
             confidence: 0,
             detected: result.detected,
-            warnings: ['⚠️ FRAUD ALERT: This transaction reference has already been used. Each Airtel Money transaction can only be used once.'],
+            warnings: ['⚠️ FRAUD ALERT: This transaction reference has already been used. Each mobile money transaction can only be used once.'],
             riskScore: 100,
             extractedReferenceId: result.extractedReferenceId
           })
@@ -199,7 +199,7 @@ Return your analysis as JSON with:
       
       // Enhance result with encouraging messages for successful verification
       if (result.success) {
-        result.successMessage = "🎉 Excellent! Your payment has been verified. Your CGrow investment is now active and earning 15% daily returns!"
+        result.successMessage = "🎉 Excellent! Your payment has been verified successfully!"
       }
 
       return NextResponse.json(result)
