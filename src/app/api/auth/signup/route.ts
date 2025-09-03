@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import { db } from '@/lib/db'
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,13 +44,22 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // Generate JWT token for auto-login
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    )
+
     return NextResponse.json({ 
-      message: 'User created successfully',
+      message: 'Account created successfully! Welcome to CGrow!',
+      token,
       user: {
         id: user.id,
         email: user.email,
         phone: user.phone,
-        balance: user.balance
+        balance: user.balance,
+        lastAiDepositDate: user.lastAiDepositDate
       }
     })
 

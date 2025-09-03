@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '')
@@ -16,8 +16,9 @@ export async function GET(
     }
 
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }
+    const { userId } = await params
     
-    if (decoded.userId !== params.userId) {
+    if (decoded.userId !== userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -27,7 +28,7 @@ export async function GET(
     }
 
     const transactions = await db.transaction.findMany({
-      where: { userId: params.userId },
+      where: { userId },
       orderBy: { createdAt: 'desc' }
     })
 

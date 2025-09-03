@@ -20,7 +20,6 @@ export default function AuthPage() {
   const [agreeToTerms, setAgreeToTerms] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -55,7 +54,6 @@ export default function AuthPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    setSuccess('')
     
     if (signupData.password !== signupData.confirmPassword) {
       setError('Passwords do not match')
@@ -83,9 +81,11 @@ export default function AuthPage() {
       const data = await response.json()
       
       if (response.ok) {
-        setSuccess('Account created successfully! Please login.')
-        setSignupData({ email: '', phone: '', password: '', confirmPassword: '' })
-        setAgreeToTerms(false)
+        // Auto-login the user after successful signup
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+        // Redirect to dashboard immediately
+        router.push('/dashboard')
       } else {
         setError(data.error || 'Signup failed')
       }
@@ -272,11 +272,7 @@ export default function AuthPage() {
                     </Alert>
                   )}
                   
-                  {success && (
-                    <Alert className="border-green-200 bg-green-50">
-                      <AlertDescription className="text-green-800">{success}</AlertDescription>
-                    </Alert>
-                  )}
+
                   
                   <Button 
                     type="submit" 
