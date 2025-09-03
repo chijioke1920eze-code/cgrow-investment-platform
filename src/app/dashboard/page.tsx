@@ -44,6 +44,7 @@ import {
   Camera,
   FileImage,
   Bot,
+
   Lock,
   Unlock,
   Ban
@@ -111,10 +112,7 @@ export default function Dashboard() {
   const [uploadedImage, setUploadedImage] = useState<File | null>(null)
   const [aiVerifying, setAiVerifying] = useState(false)
   const [aiResult, setAiResult] = useState<AIVerificationResult | null>(null)
-  const [showAIChatbox, setShowAIChatbox] = useState(false)
-  const [chatMessages, setChatMessages] = useState<{role: string, content: string}[]>([])
-  const [chatInput, setChatInput] = useState('')
-  const [aiTyping, setAiTyping] = useState(false)
+
   const [darkMode, setDarkMode] = useState(true)
   const [showMinDepositError, setShowMinDepositError] = useState(false)
   const [withdrawalTimeLeft, setWithdrawalTimeLeft] = useState(0)
@@ -744,68 +742,7 @@ export default function Dashboard() {
     }
   }
 
-  const sendChatMessage = async () => {
-    if (!chatInput.trim()) return
 
-    const userMessage = chatInput.trim()
-    setChatInput('')
-    setChatMessages(prev => [...prev, { role: 'user', content: userMessage }])
-    setAiTyping(true)
-
-    try {
-      // Calculate real user stats for AI context
-      const completedDeposits = transactions?.filter(t => t.type === 'DEPOSIT' && t.status === 'COMPLETED') || []
-      const totalDeposits = completedDeposits.reduce((sum, t) => sum + t.amount, 0)
-      const totalProfit = (user?.balance || 0) - totalDeposits
-      
-      console.log('Sending AI chat request with real user data:', {
-        userBalance: user?.balance || 0,
-        totalDeposits,
-        totalProfit,
-        transactionCount: transactions?.length || 0,
-        userName: user?.email || 'Investor'
-      })
-
-      const response = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          userBalance: user?.balance || 0,
-          userHistory: transactions || [],
-          userName: user?.email || 'Investor'
-        })
-      })
-
-      if (!response.ok) {
-        console.error('AI chat API error:', response.status, response.statusText)
-        throw new Error(`API error: ${response.status}`)
-      }
-
-      const data = await response.json()
-      console.log('AI chat response:', data)
-      
-      setAiTyping(false)
-      setChatMessages(prev => [...prev, { role: 'assistant', content: data.message }])
-    } catch (error) {
-      console.error('AI chat error:', error)
-      setAiTyping(false)
-      
-      // Personalized fallback with real user data
-      const userBalance = user?.balance || 0
-      const fallbackMessage = userBalance > 0 
-        ? `Hello! 🌟 I see your CGrow balance of ${formatCurrency(userBalance)} is growing beautifully! Our 15% daily returns are working perfectly for you. What specific aspect of your investment would you like to discuss? 💰`
-        : "Hello! 🌟 Welcome to CGrow! I'm here to help you start your journey to financial freedom with our guaranteed 15% daily returns. What would you like to know about investing with us? 💰"
-      
-      setChatMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: fallbackMessage
-      }])
-    }
-  }
 
   const handleApplyGrowth = async () => {
     try {
@@ -1830,90 +1767,7 @@ export default function Dashboard() {
           </DialogContent>
         </Dialog>
 
-        {/* AI Chatbox */}
-        <Dialog open={showAIChatbox} onOpenChange={setShowAIChatbox}>
-          <DialogContent className="sm:max-w-[500px] bg-black/95 backdrop-blur-xl border-zinc-700 max-h-[600px] flex flex-col">
-            <DialogHeader>
-              <DialogTitle className="text-white flex items-center space-x-2">
-                <Bot className="w-5 h-5 text-green-400" />
-                <span>CGrow AI Assistant</span>
-              </DialogTitle>
-              <DialogDescription className="text-white/80">
-                Ask me anything about your investment portfolio and earnings
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="flex-1 space-y-4 overflow-y-auto max-h-[400px]">
-              {chatMessages.length === 0 && (
-                <div className="text-center py-8">
-                  <Bot className="w-12 h-12 mx-auto text-green-400 mb-4" />
-                  <p className="text-white/80">
-                    Hello! I'm your CGrow AI assistant. I can help you with:
-                  </p>
-                  <ul className="text-sm text-zinc-400 mt-2 space-y-1">
-                    <li>• Portfolio performance and earnings</li>
-                    <li>• Investment strategies and tips</li>
-                    <li>• Account information and history</li>
-                    <li>• Growth projections and calculations</li>
-                  </ul>
-                </div>
-              )}
-              
-              {chatMessages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-lg p-3 ${
-                      msg.role === 'user'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-zinc-800 text-white border border-zinc-700'
-                    }`}
-                  >
-                    {msg.role === 'assistant' && (
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Bot className="w-4 h-4 text-green-400" />
-                        <span className="text-xs text-green-400">CGrow AI</span>
-                      </div>
-                    )}
-                    <p className="text-sm">{msg.content}</p>
-                  </div>
-                </div>
-              ))}
-              
-              {aiTyping && (
-                <div className="flex justify-start">
-                  <div className="bg-zinc-800 text-white border border-zinc-700 rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <Bot className="w-4 h-4 text-green-400 animate-pulse" />
-                      <span className="text-xs text-green-400">CGrow AI is typing...</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <div className="border-t border-zinc-700 pt-4">
-              <div className="flex space-x-2">
-                <Input
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Ask about your investments..."
-                  className="flex-1 bg-zinc-800/50 border-zinc-600 text-white placeholder-zinc-400"
-                  onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
-                />
-                <Button
-                  onClick={sendChatMessage}
-                  disabled={aiTyping || !chatInput.trim()}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  Send
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+
 
         {/* AI Deposit Restriction Popup */}
         <Dialog open={showAiRestrictionPopup} onOpenChange={setShowAiRestrictionPopup}>
@@ -1979,46 +1833,7 @@ export default function Dashboard() {
           </DialogContent>
         </Dialog>
 
-        {/* Floating AI Chat Button */}
-        <Button
-          onClick={() => setShowAIChatbox(true)}
-          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full shadow-2xl transform transition-all duration-300 hover:scale-110 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 hover:from-cyan-500 hover:via-purple-500 hover:to-pink-500 animate-pulse"
-          style={{
-            background: 'linear-gradient(45deg, #8b5cf6, #ec4899, #06b6d4, #8b5cf6)',
-            backgroundSize: '400% 400%',
-            animation: 'gradientShift 3s ease infinite, glow 2s ease-in-out infinite alternate',
-            boxShadow: '0 0 30px rgba(139, 92, 246, 0.7), 0 0 60px rgba(236, 72, 153, 0.5), 0 0 90px rgba(6, 182, 212, 0.3)'
-          }}
-        >
-          <span 
-            className="font-bold text-lg text-white"
-            style={{
-              textShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(139, 92, 246, 0.6), 0 0 30px rgba(236, 72, 153, 0.4)',
-              filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.5))'
-            }}
-          >
-            AI
-          </span>
-        </Button>
 
-        <style jsx>{`
-          @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-          }
-          
-          @keyframes glow {
-            from {
-              box-shadow: 0 0 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(236, 72, 153, 0.3), 0 0 60px rgba(6, 182, 212, 0.2);
-              transform: scale(1);
-            }
-            to {
-              box-shadow: 0 0 40px rgba(139, 92, 246, 0.8), 0 0 80px rgba(236, 72, 153, 0.6), 0 0 120px rgba(6, 182, 212, 0.4);
-              transform: scale(1.05);
-            }
-          }
-        `}</style>
       </div>
     </div>
   )
