@@ -567,6 +567,8 @@ export default function Dashboard() {
         const data = await response.json()
         const updatedUser = data.user
         setUser(updatedUser)
+        setLiveBalance(updatedUser.balance) // Sync live balance with database balance
+        liveBalanceRef.current = updatedUser.balance // Update ref too
         localStorage.setItem('user', JSON.stringify(updatedUser))
         console.log('User data refreshed:', updatedUser)
         
@@ -724,6 +726,8 @@ export default function Dashboard() {
         const data = await response.json()
         if (response.ok) {
           setUser(prev => prev ? { ...prev, balance: data.newBalance } : null)
+          setLiveBalance(data.newBalance) // Update live balance to match new database balance
+          liveBalanceRef.current = data.newBalance // Update ref too
           setPendingTransaction(null)
           setShowAIVerification(false)
           setUploadedImage(null)
@@ -755,6 +759,8 @@ export default function Dashboard() {
       const data = await response.json()
       if (response.ok) {
         setUser(prev => prev ? { ...prev, balance: data.newBalance } : null)
+        setLiveBalance(data.newBalance) // Sync live balance
+        liveBalanceRef.current = data.newBalance // Update ref too
         setMessage({ type: 'success', text: `Croissance quotidienne appliquée ! +${formatCurrency(data.growthAmount)}` })
         fetchGrowthInfo()
       } else {
