@@ -45,3 +45,6 @@ server.log
 # IDE
 .vscode/
 .idea/
+
+# Local Netlify folder
+.netlify
