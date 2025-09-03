@@ -108,7 +108,7 @@ Give a direct, specific answer to their exact question using their real account 
         'X-Title': 'CGrow Investment Platform'
       },
       body: JSON.stringify({
-        model: 'openai/gpt-5-mini', // Using the original model name
+        model: 'openai/gpt-4o-mini', // Use valid OpenRouter model
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
