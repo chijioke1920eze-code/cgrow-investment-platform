@@ -95,13 +95,13 @@ Return your analysis as JSON with:
     const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer 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`,
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY || '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'}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://unknown-app.com',
         'X-Title': 'Payment Verification System'
       },
       body: JSON.stringify({
-        model: 'qwen/qwen2.5-vl-72b-instruct',
+        model: 'openai/gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { 
