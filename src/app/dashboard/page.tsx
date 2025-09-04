@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
+import { formatCurrency } from '@/lib/utils'
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -149,13 +150,6 @@ export default function Dashboard() {
     cumulative: i * 500 + Math.floor(Math.random() * 200)
   }))
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('fr-CM', {
-      style: 'currency',
-      currency: 'XAF',
-      minimumFractionDigits: 0
-    }).format(amount)
-  }
 
   // Generate real chart data based on user's actual deposits
   const generateRealChartData = () => {
