@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 import { formatCurrency } from '@/lib/utils'
 
 interface Student {
@@ -24,6 +25,33 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true)
   const [totalStudents, setTotalStudents] = useState(0)
   const [showPasswords, setShowPasswords] = useState(false)
+  
+  // Authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
+
+  // Authentication handler
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoginError('')
+    
+    // Check hardcoded teacher credentials
+    if (loginEmail === '2@gmail.com' && loginPassword === '888888') {
+      setIsAuthenticated(true)
+      localStorage.setItem('adminAuth', 'true')
+      setLoginEmail('')
+      setLoginPassword('')
+    } else {
+      setLoginError('Invalid teacher credentials. Contact system administrator.')
+    }
+  }
+
+  const handleLogout = () => {
+    setIsAuthenticated(false)
+    localStorage.removeItem('adminAuth')
+  }
 
   const fetchStudents = async () => {
     try {
@@ -43,8 +71,18 @@ export default function AdminPanel() {
   }
 
   useEffect(() => {
-    fetchStudents()
+    // Check for existing authentication
+    const adminAuth = localStorage.getItem('adminAuth')
+    if (adminAuth === 'true') {
+      setIsAuthenticated(true)
+    }
   }, [])
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchStudents()
+    }
+  }, [isAuthenticated])
 
   const copyAllPasswords = () => {
     const passwordList = students.map(s => `${s.email}: ${s.password}`).join('\n')
@@ -69,6 +107,69 @@ export default function AdminPanel() {
     window.URL.revokeObjectURL(url)
   }
 
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-black flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-zinc-800/50 border-zinc-700">
+          <CardHeader className="text-center">
+            <CardTitle className="text-white text-2xl">👨‍🏫 Teacher Login</CardTitle>
+            <p className="text-zinc-400">Admin Panel Access</p>
+            <Badge className="mx-auto bg-blue-900/50 text-blue-300 border-blue-700">
+              🎓 Educational Demo Control
+            </Badge>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Teacher Email
+                </label>
+                <Input
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  className="bg-zinc-700 border-zinc-600 text-white"
+                  placeholder="Enter teacher email"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Password
+                </label>
+                <Input
+                  type="password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  className="bg-zinc-700 border-zinc-600 text-white"
+                  placeholder="Enter password"
+                  required
+                />
+              </div>
+              {loginError && (
+                <div className="text-red-400 text-sm bg-red-900/20 p-3 rounded border border-red-700">
+                  {loginError}
+                </div>
+              )}
+              <Button 
+                type="submit" 
+                className="w-full bg-blue-600 hover:bg-blue-700"
+              >
+                🔐 Access Admin Panel
+              </Button>
+            </form>
+            <div className="mt-6 text-center">
+              <div className="text-xs text-zinc-500">
+                For teacher access only. Contact administrator if needed.
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-black flex items-center justify-center">
@@ -81,12 +182,20 @@ export default function AdminPanel() {
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-black p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">👨‍🏫 Teacher Admin Panel</h1>
-          <p className="text-zinc-400">Educational Demo - CGrow Investment Platform</p>
-          <Badge className="mt-2 bg-blue-900/50 text-blue-300 border-blue-700">
-            🎓 Educational Purpose Only
-          </Badge>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">👨‍🏫 Teacher Admin Panel</h1>
+            <p className="text-zinc-400">Educational Demo - CGrow Investment Platform</p>
+            <Badge className="mt-2 bg-blue-900/50 text-blue-300 border-blue-700">
+              🎓 Educational Purpose Only
+            </Badge>
+          </div>
+          <Button 
+            onClick={handleLogout}
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            🚪 Logout
+          </Button>
         </div>
 
         {/* Stats Cards */}
