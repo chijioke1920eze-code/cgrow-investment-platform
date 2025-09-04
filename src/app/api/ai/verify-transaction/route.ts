@@ -125,10 +125,13 @@ Return your analysis as JSON with:
       extractedReferenceId: result.extractedReferenceId
     })
     
-    // Enhance result with encouraging messages for successful verification
-    result.successMessage = "🎉 Excellent! Your payment has been verified successfully!"
+                // Enhance result with encouraging messages for successful verification
+            const enhancedResult = {
+              ...result,
+              successMessage: "🎉 Excellent! Your payment has been verified successfully!"
+            }
 
-    return NextResponse.json(result)
+    return NextResponse.json(enhancedResult)
 
   } catch (error: any) {
     console.error('AI verification error:', {
