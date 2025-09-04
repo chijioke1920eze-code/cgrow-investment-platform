@@ -11,7 +11,7 @@ JWT_SECRET=cgrow-super-secret-jwt-key-production-2024
 
 NEXTAUTH_SECRET=cgrow-nextauth-secret-production-2024
 
-NEXTAUTH_URL=https://your-netlify-site.netlify.app
+NEXTAUTH_URL=https://cgrow.netlify.app
 
 NODE_ENV=production
 

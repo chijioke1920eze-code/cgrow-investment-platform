@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CGrow - Investissement Congo | 15% Rendement Quotidien | Mobile Money",
     description: "🇨🇩 Plateforme d'investissement #1 au Congo ! 15% de croissance quotidienne. Airtel Money accepté. +10,000 investisseurs satisfaits.",
-    url: "https://cgrow-investment.netlify.app",
+    url: "https://cgrow.netlify.app",
     siteName: "CGrow Congo Investment",
     type: "website",
     locale: "fr_CD",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     images: ["/logo.png"],
   },
   alternates: {
-    canonical: "https://cgrow-investment.netlify.app",
+    canonical: "https://cgrow.netlify.app",
   },
   verification: {
     google: "your-google-verification-code",
@@ -88,8 +88,8 @@ export default function RootLayout({
               "@type": "FinancialService",
               "name": "CGrow",
               "description": "Plateforme d'investissement #1 au Congo avec 15% de rendement quotidien",
-              "url": "https://cgrow-investment.netlify.app",
-              "logo": "https://cgrow-investment.netlify.app/logo.png",
+              "url": "https://cgrow.netlify.app",
+              "logo": "https://cgrow.netlify.app/logo.png",
               "address": {
                 "@type": "PostalAddress",
                 "addressCountry": "CD",

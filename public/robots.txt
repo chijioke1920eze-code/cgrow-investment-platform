@@ -1,5 +1,5 @@
 # CGrow - Investissement Congo
-# https://cgrow-investment.netlify.app
+# https://cgrow.netlify.app
 
 User-agent: *
 Allow: /
@@ -36,4 +36,4 @@ User-agent: WhatsApp
 Allow: /
 
 # Sitemap location
-Sitemap: https://cgrow-investment.netlify.app/sitemap.xml
+Sitemap: https://cgrow.netlify.app/sitemap.xml
