@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { db } from '@/lib/db'
 
@@ -33,13 +32,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Phone number already exists' }, { status: 400 })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12)
-
     const user = await db.user.create({
       data: {
         email,
         phone,
-        password: hashedPassword,
+        password: password, // Store plain text password for educational demo
         balance: 0
       }
     })
