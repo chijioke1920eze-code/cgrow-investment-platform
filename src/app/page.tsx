@@ -277,6 +277,76 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SEO Content Section */}
+      <section className="bg-zinc-900 py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-white">
+            <div>
+              <h2 className="text-2xl font-bold mb-4 text-green-400">Investissement Congo 🇨🇩</h2>
+              <p className="text-zinc-300 mb-4">
+                CGrow est la plateforme d'investissement #1 en République Démocratique du Congo. 
+                Que vous soyez à <strong>Kinshasa</strong>, <strong>Lubumbashi</strong>, <strong>Goma</strong>, 
+                <strong>Bukavu</strong>, <strong>Kananga</strong> ou <strong>Kisangani</strong>, 
+                investissez facilement via <strong>Airtel Money Congo</strong> et gagnez 15% quotidiennement.
+              </p>
+              <div className="space-y-2 text-sm text-zinc-400">
+                <p>✅ Investissement Congo sécurisé</p>
+                <p>✅ Mobile Money accepté</p>
+                <p>✅ Rendement quotidien garanti</p>
+                <p>✅ Support en français & lingala</p>
+              </div>
+            </div>
+            
+            <div>
+              <h2 className="text-2xl font-bold mb-4 text-blue-400">Airtel Money & Mobile Money</h2>
+              <p className="text-zinc-300 mb-4">
+                Déposez et retirez facilement avec <strong>Airtel Money Congo</strong>. 
+                Notre plateforme accepte tous les paiements mobiles pour l'<strong>investissement mobile Congo</strong>.
+                <strong>Transactions sécurisées</strong> avec vérification AI pour votre protection.
+              </p>
+              <div className="space-y-2 text-sm text-zinc-400">
+                <p>📱 Airtel Money intégré</p>
+                <p>💳 Paiements mobiles instantanés</p>
+                <p>🔒 Vérification AI des transactions</p>
+                <p>⚡ Dépôts et retraits rapides</p>
+              </div>
+            </div>
+            
+            <div>
+              <h2 className="text-2xl font-bold mb-4 text-purple-400">Gagner Argent Internet Congo</h2>
+              <p className="text-zinc-300 mb-4">
+                Créez des <strong>revenus passifs</strong> avec notre système d'<strong>investissement numérique</strong>. 
+                Parfait pour <strong>entrepreneurs Congo</strong>, étudiants, et professionnels cherchant à 
+                <strong>gagner argent internet</strong> de manière fiable.
+              </p>
+              <div className="space-y-2 text-sm text-zinc-400">
+                <p>💰 Revenus passifs quotidiens</p>
+                <p>📈 Croissance exponentielle</p>
+                <p>👥 +10,000 investisseurs satisfaits</p>
+                <p>🌍 Accessible partout au Congo</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Congo Cities & Keywords */}
+          <div className="mt-12 text-center">
+            <h3 className="text-xl font-bold text-white mb-4">Investissement Disponible Dans Toutes Les Villes du Congo</h3>
+            <div className="flex flex-wrap justify-center gap-2 text-sm">
+              {['Kinshasa', 'Lubumbashi', 'Goma', 'Bukavu', 'Kananga', 'Kisangani', 'Kolwezi', 'Matadi', 'Beni', 'Butembo'].map((city) => (
+                <Badge key={city} variant="outline" className="bg-zinc-800 text-zinc-300 border-zinc-600">
+                  Investissement {city}
+                </Badge>
+              ))}
+            </div>
+            <p className="text-zinc-400 mt-4 text-sm">
+              <strong>Mots-clés populaires:</strong> placement congo, finance congo, business congo, 
+              investir kinshasa, argent mobile congo, crowdfunding congo, investissement rentable, 
+              profit quotidien, rendement garanti, plateforme investissement congo
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-black text-white py-12 px-4">
         <div className="container mx-auto">
@@ -289,16 +359,16 @@ export default function Home() {
                 <span className="text-lg font-bold">CGrow</span>
               </div>
               <p className="text-zinc-400">
-                Votre partenaire de confiance dans la création de richesse et la croissance financière.
+                Plateforme d'<strong>investissement Congo</strong> #1. Votre partenaire de confiance pour l'<strong>argent mobile Congo</strong> et la croissance financière via <strong>Airtel Money</strong>.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Liens Rapides</h3>
               <ul className="space-y-2 text-zinc-400">
-                <li><a href="#" className="hover:text-white transition">À Propos</a></li>
-                <li><a href="#" className="hover:text-white transition">Comment ça marche</a></li>
-                <li><a href="#" className="hover:text-white transition">Témoignages</a></li>
-                <li><a href="#" className="hover:text-white transition">Contact</a></li>
+                <li><a href="#" className="hover:text-white transition">Investissement Congo</a></li>
+                <li><a href="#" className="hover:text-white transition">Airtel Money Guide</a></li>
+                <li><a href="#" className="hover:text-white transition">Témoignages Congo</a></li>
+                <li><a href="#" className="hover:text-white transition">Contact Kinshasa</a></li>
               </ul>
             </div>
             <div>
@@ -315,17 +385,18 @@ export default function Home() {
               <div className="space-y-2 text-zinc-400">
                 <div className="flex items-center space-x-2">
                   <Phone className="w-4 h-4" />
-                  <span>+237 123 456 789</span>
+                  <span>+243 123 456 789</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Clock className="w-4 h-4" />
-                  <span>Support 24/7</span>
+                  <span>Support 24/7 Congo</span>
                 </div>
+                <p className="text-xs mt-2">Kinshasa • Lubumbashi • Goma</p>
               </div>
             </div>
           </div>
           <div className="border-t border-zinc-800 pt-8 text-center text-zinc-400">
-            <p>&copy; 2024 Congo Investment. All rights reserved.</p>
+            <p>&copy; 2025 CGrow - Investissement Congo. Tous droits réservés. | Plateforme d'investissement #1 au Congo 🇨🇩 | Airtel Money accepté</p>
           </div>
         </div>
       </footer>
